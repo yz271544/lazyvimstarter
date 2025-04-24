@@ -205,6 +205,14 @@ return {
       cmake_build_directory = function()
         return "cmake-build-${variant:buildType}"
       end, -- this is used to specify generate directory for cmake, allows macro expansion, can be a string or a function returning the string, relative to cwd.
+      cmake_target_settings = {
+        Debug = {
+          buildRoot = "${projectDir}/cmake-build-debug",
+        },
+        Release = {
+          buildRoot = "${projectDir}/cmake-build-release",
+        },
+      },
       cmake_soft_link_compile_commands = true, -- this will automatically make a soft link from compile commands file to project root dir
       cmake_compile_commands_from_lsp = false, -- this will automatically set compile commands file location using lsp, to use it, please set `cmake_soft_link_compile_commands` to false
       cmake_kits_path = nil, -- this is used to specify global cmake kits path, see CMakeKits for detailed usage
