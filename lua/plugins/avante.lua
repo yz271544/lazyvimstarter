@@ -8,15 +8,23 @@ return {
     opts = {
       provider = "copilot",
       auto_suggestions_provider = "copilot",
-      copilot = {
-        model = "claude-3.5-sonnet",
-        temperature = 0,
-        max_tokens = 8192,
-      },
+      --copilot = {
+      --  model = "claude-3.5-sonnet",
+      --  temperature = 0,
+      --  --max_tokens = 8192,
+      --},
       hints = { enabled = false },
       file_selector = {
         provider = "snacks",
         provider_opts = {},
+      },
+      providers = {
+        copilot = {
+          extra_request_body = {
+            max_tokens = 8192,
+            temperature = 0,
+          },
+        },
       },
     },
 
