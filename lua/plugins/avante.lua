@@ -1,6 +1,6 @@
 return {
   -- Neovim 0.12 can use the current Avante source directly.
-  dir = "/data/lyndon/iProject/luapath/avante.nvim",
+  dir = "/lyndon/iProject/luapath/avante.nvim",
   name = "avante.nvim",
   -- if you want to build from source then do `make BUILD_FROM_SOURCE=true`
   -- ⚠️ must add this setting! ! !
