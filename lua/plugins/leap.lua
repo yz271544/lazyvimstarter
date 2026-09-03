@@ -4,6 +4,9 @@ return {
   {
     "andyg/leap.nvim",
     url = "https://codeberg.org/andyg/leap.nvim",
-    event = "VeryLazy",
+    -- Git is currently configured to use an unavailable localhost proxy.
+    -- Keep Leap disabled so Lazy does not retry the clone on every startup;
+    -- LazyVim's already-installed flash.nvim provides equivalent jump motions.
+    enabled = false,
   },
 }

@@ -1,9 +1,12 @@
 return {
-  "yetone/avante.nvim",
+  -- Current main requires Neovim 0.12; this worktree is pinned to the last
+  -- Neovim 0.11-compatible commit that already supports ACP.
+  dir = "/data/lyndon/iProject/luapath/avante.nvim-nvim011",
+  name = "avante.nvim",
   -- if you want to build from source then do `make BUILD_FROM_SOURCE=true`
   -- ⚠️ must add this setting! ! !
   build = vim.fn.has("win32") ~= 0 and "powershell -ExecutionPolicy Bypass -File Build.ps1 -BuildFromSource false"
-    or "make",
+    or "make TARGET_DIR=/data/cargo-target/.target/release",
   event = "VeryLazy",
   version = false, -- Never set this value to "*"! Never!
   ---@module 'avante'
@@ -11,14 +14,14 @@ return {
   opts = {
     ---@alias Provider "claude" | "openai" | "azure" | "gemini" | "cohere" | "copilot" | string
     ---@type Provider
-    provider = "claude", -- The provider used in Aider mode or in the planning phase of Cursor Planning Mode
+    provider = "codex", -- Reuse the local Codex login through ACP
     ---@alias Mode "agentic" | "legacy"
     ---@type Mode
     mode = "agentic", -- The default mode for interaction. "agentic" uses tools to automatically generate code, "legacy" uses the old planning method to generate code.
     -- WARNING: Since auto-suggestions are a high-frequency operation and therefore expensive,
     -- currently designating it as `copilot` provider is dangerous because: https://github.com/yetone/avante.nvim/issues/1048
     -- Of course, you can reduce the request frequency by increasing `suggestion.debounce`.
-    auto_suggestions_provider = "claude",
+    auto_suggestions_provider = "codex",
     providers = {
       openai = {
         endpoint = "https://api.openai.com/v1",
@@ -34,6 +37,28 @@ return {
         extra_request_body = {
           temperature = 0.75,
           max_tokens = 768,
+        },
+      },
+    },
+    -- Codex and Claude Code are CLI agents. Avante talks to them through ACP
+    -- adapters; HOME/PATH let those adapters reuse the existing CLI login state.
+    acp_providers = {
+      codex = {
+        command = "npx",
+        args = { "--yes", "@agentclientprotocol/codex-acp" },
+        env = {
+          HOME = os.getenv("HOME"),
+          PATH = os.getenv("PATH"),
+          NODE_NO_WARNINGS = "1",
+        },
+      },
+      ["claude-code"] = {
+        command = "npx",
+        args = { "--yes", "@agentclientprotocol/claude-agent-acp" },
+        env = {
+          HOME = os.getenv("HOME"),
+          PATH = os.getenv("PATH"),
+          NODE_NO_WARNINGS = "1",
         },
       },
     },
@@ -62,6 +87,7 @@ return {
       minimize_diff = true, -- Whether to remove unchanged lines when applying a code block
       enable_token_counting = true, -- Whether to enable token counting. Default to true.
       auto_approve_tool_permissions = false, -- Default: show permission prompts for all tools
+      acp_follow_agent_locations = true,
       -- Examples:
       -- auto_approve_tool_permissions = true,                -- Auto-approve all tools (no prompts)
       -- auto_approve_tool_permissions = {"bash", "replace_in_file"}, -- Auto-approve specific tools only
