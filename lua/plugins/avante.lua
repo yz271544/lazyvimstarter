@@ -1,7 +1,6 @@
 return {
-  -- Current main requires Neovim 0.12; this worktree is pinned to the last
-  -- Neovim 0.11-compatible commit that already supports ACP.
-  dir = "/data/lyndon/iProject/luapath/avante.nvim-nvim011",
+  -- Neovim 0.12 can use the current Avante source directly.
+  dir = "/data/lyndon/iProject/luapath/avante.nvim",
   name = "avante.nvim",
   -- if you want to build from source then do `make BUILD_FROM_SOURCE=true`
   -- ⚠️ must add this setting! ! !
