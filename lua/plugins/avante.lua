@@ -8,19 +8,27 @@ return {
     or "make TARGET_DIR=/data/cargo-target/.target/release",
   event = "VeryLazy",
   version = false, -- Never set this value to "*"! Never!
+  -- After avante is loaded, force provider=pi (overrides any in-session
+  -- :AvanteSwitchProvider changes so the next nvim start always boots to pi).
+  config = function(_, opts)
+    require("avante").setup(vim.tbl_deep_extend("force", opts, {
+      provider = "pi",
+      auto_suggestions_provider = "pi",
+    }))
+  end,
   ---@module 'avante'
   ---@type avante.Config
   opts = {
     ---@alias Provider "claude" | "openai" | "azure" | "gemini" | "cohere" | "copilot" | string
     ---@type Provider
-    provider = "codex", -- Reuse the local Codex login through ACP
+    provider = "pi", -- Reuse the local Pi login through ACP (pi-acp adapter)
     ---@alias Mode "agentic" | "legacy"
     ---@type Mode
     mode = "agentic", -- The default mode for interaction. "agentic" uses tools to automatically generate code, "legacy" uses the old planning method to generate code.
     -- WARNING: Since auto-suggestions are a high-frequency operation and therefore expensive,
     -- currently designating it as `copilot` provider is dangerous because: https://github.com/yetone/avante.nvim/issues/1048
     -- Of course, you can reduce the request frequency by increasing `suggestion.debounce`.
-    auto_suggestions_provider = "codex",
+    auto_suggestions_provider = "pi",
     providers = {
       openai = {
         endpoint = "https://api.openai.com/v1",
@@ -39,9 +47,26 @@ return {
         },
       },
     },
-    -- Codex and Claude Code are CLI agents. Avante talks to them through ACP
+    -- Pi, Codex and Claude Code are CLI agents. Avante talks to them through ACP
     -- adapters; HOME/PATH let those adapters reuse the existing CLI login state.
     acp_providers = {
+      pi = {
+        command = "npx",
+        args = { "--yes", "pi-acp" },
+        env = {
+          HOME = os.getenv("HOME"),
+          PATH = os.getenv("PATH"),
+          NODE_NO_WARNINGS = "1",
+          HTTP_PROXY = os.getenv("HTTP_PROXY"),
+          HTTPS_PROXY = os.getenv("HTTPS_PROXY"),
+          ALL_PROXY = os.getenv("ALL_PROXY"),
+          NO_PROXY = os.getenv("NO_PROXY"),
+          http_proxy = os.getenv("http_proxy"),
+          https_proxy = os.getenv("https_proxy"),
+          all_proxy = os.getenv("all_proxy"),
+          no_proxy = os.getenv("no_proxy"),
+        },
+      },
       codex = {
         command = "npx",
         args = { "--yes", "@agentclientprotocol/codex-acp" },
